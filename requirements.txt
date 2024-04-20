@@ -4,6 +4,8 @@
 pandas
 numpy
 jupyter
+matplotlib
+seaborn
 
 ################################################################
 # Machine learning libs
