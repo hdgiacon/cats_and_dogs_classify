@@ -161,3 +161,6 @@ cython_debug/
 
 # pasta de dados
 data/
+
+# pasta com os modelos treinados salvos
+output/
