@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 from IPython.display import Image as display_image
 from IPython.display import display
 from types import FunctionType
@@ -13,12 +14,47 @@ src_folder_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(src_folder_path)
 
 
+def plot_accuracy_loss(history) -> None:
+    '''
+    Plota dois gráficos: `acurácia` do treino e validação, e `taxa de aprendizagem` do treino e validação.
+
+    Args:
+        * `history`: histórico de treinamento do modelo.
+    '''
+
+    acc = history.history['acc']
+    val_acc = history.history['val_acc']
+
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+    max_v = max(history.epoch) + 1
+    epochs_range = range(max_v)
+
+    plt.figure(figsize = (8, 8))
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs_range, acc, label = 'Training accuracy')
+    plt.plot(epochs_range, val_acc, label = 'Validation accuracy')
+    plt.legend(loc = 'lower right')
+    plt.title('Training and Validation accuracy')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs_range, loss, label = 'Training Loss')
+    plt.plot(epochs_range, val_loss, label = 'Validation Loss')
+    plt.legend(loc = 'upper right')
+    plt.title('Training and Validation Loss')
+    plt.show()
+
+
 def select_preprocess_input_method(preprocess_input_method: FunctionType, image: np.ndarray) -> np.ndarray:
     '''
     Mediante ao `preprocess_input_method`, seleciona o preprocess_input para `resnet`, `efficientnet` ou `mobilenet_v2`.
 
     Args:
         * `preprocess_input_method`: tipo de pré-processamento de entrada mediante ao modelo escolhido;
+            * tf.keras.applications.resnet.preprocess_input
+            * tf.keras.applications.efficientnet.preprocess_input
+            * tf.keras.applications.mobilenet_v2.preprocess_input
+
         * `image`: imagem que será passada para preprocess_input.
 
     Return:
@@ -109,7 +145,20 @@ def make_gradcam_heatmap(
     last_conv_layer_name: str, 
     pred_index: int = None
 ) -> np.ndarray:
-    ''''''
+    '''
+    Cria o `gradiente` como um mapa de calor (heatmap) a partir da ultima camada convolucional de um determinado modelo. O gradiente
+    consiste no `mapa de ativação` das features na ultima camada, ou seja, os locais onde o modelo de classificação detectou as 
+    características.
+
+    Args:
+        * `img_array`: imagem de teste como um array Numpy;
+        * `model`: modelo atual já treinado;
+        * `last_conv_layer_name`: nome da ultima camada convolucional. Utilizar função `get_last_conv_layer_name`;
+        * `pred_index`: indice da probabilidade de uma determinada classe.
+
+    Return:
+        Heatmap como um array Numpy.
+    '''
 
     # Primeiro, criamos um modelo que mapeia a imagem de entrada para as ativações
     # da última camada de convolução, bem como as previsões de saída.
@@ -148,8 +197,16 @@ def make_gradcam_heatmap(
     return heatmap.numpy()
 
 
-def save_and_display_gradcam(img_path: str, heatmap: np.ndarray, cam_path: str = "cam.jpg", alpha: float = 0.4) -> None:
-    ''''''
+def display_gradcam(img_path: str, heatmap: np.ndarray, cam_path: str = "cam.jpg", alpha: float = 0.4) -> None:
+    '''
+    Mostra a imagem usada como teste no modelo treinado com o mapa de calor sobreposto a ela.
+
+    Args:
+        * `img_path`: caminho (path) da imagem de teste;
+        * `heatmap`: mapa de calor retornado pela função `make_gradcam_heatmap`;
+        * `cam_path`: caminho (path) para a imagem de saída;
+        * `alpha`: valor da trasnparência do mapa de calor sobre a imagem testada.
+    '''
 
     # imagem original
     img = tf.keras.preprocessing.image.load_img(img_path)

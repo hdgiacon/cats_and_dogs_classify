@@ -99,6 +99,24 @@ def create_train_generator(train_df: pd.DataFrame, preprocess_input: FunctionTyp
         * `fig_size`: tamanho das imagens. Por padrão é `300`;
         * `batch_size`: número de amostras de dados em cada lote. Por padrão é `8`.
 
+    Args used on Datagen:
+        * `rotation_range`: 
+        * `width_shift_range`:
+        * `height_shift_range`:
+        * `shear_range`:
+        * `zoom_range`:
+        * `horizontal_flip`:
+        * `fill_mode`:
+        * `preprocessing_function`:
+
+    flow_from_dataframe_Args:
+        * `dataframe`:
+        * `x_col`:
+        * `y_col`:
+        * `target_size`:
+        * `batch_size`:
+        * `class_mode`:
+
     Return:
         Generator para os dados de treino.
     '''
